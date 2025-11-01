@@ -1,3 +1,5 @@
+from Crypto.Cipher import AES
+
 BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 def EncodeXor(tabMessage, tabKey):
@@ -78,12 +80,18 @@ def DecodeBase64(strMessage):
     return bytes(decoded_bytes)
 
 def EncodeAES_ECB(strMessage, tabKey):
-    """
-    Chiffrement AES-ECB 128 bits de strMessage avec tabKey comme clef
-    La taille de chaine est quelconque et sera complété par des caractères espace si nécessaire
-    tabKey est un tableau de 16 éléments
-    Avant chiffrement la chaine est encodée en utf8
-    """
+    if len(tabKey) != 16:
+        raise ValueError("La clé doit contenir exactement 16 octets")
+    
+    key_bytes = bytes(tabKey)
+    cipher = AES.new(key_bytes, AES.MODE_ECB)
+    
+    message_bytes = strMessage.encode('utf-8')
+    if len(message_bytes) % 16 != 0:
+        padding_len = 16 - (len(message_bytes) % 16)
+        message_bytes += b' ' * padding_len
+    
+    return cipher.encrypt(message_bytes)
 
 def DecodeAES_ECB(strMessage, tabKey):
     """
@@ -171,7 +179,7 @@ def main():
     print(Indice([1,2,3,4,5,6],3)==2)
     print(EncodeBase64(b"Une Chaine")==b"VW5lIENoYWluZQ==")
     print(DecodeBase64("VW5lIENoYWluZQ==")==b"Une Chaine")
-    #print(EncodeAES_ECB("Elements",[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])==b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d')
+    print(EncodeAES_ECB("Elements",[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])==b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d')
     #print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
     print(Contient("OK","Le resultat est OK !")==True)
     print(Contient("OK","Le resultat est Ok !")==False)
