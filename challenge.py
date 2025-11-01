@@ -104,6 +104,8 @@ def EstImprimable(caractere):
     Liste des caractères imprimables :
     0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     """
+    c_imprimables = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ "
+    return Contient(caractere,c_imprimables)
 
 def Remplace(chaine,avant,apres):
     """
@@ -146,9 +148,9 @@ def main():
     #print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
     print(Contient("OK","Le resultat est OK !")==True)
     print(Contient("OK","Le resultat est Ok !")==False)
-    #print(EstImprimable("A")==True)
-    #print(EstImprimable("\x07")==False)
-    #print(EstImprimable(" ")==True)
+    print(EstImprimable("A")==True)
+    print(EstImprimable("\x07")==False)
+    print(EstImprimable(" ")==True)
     #print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
     #print(Extraire("ROUGE,0034,4EF563",",",1)==34)
     #print(Format(3)=="0003")
