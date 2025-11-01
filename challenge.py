@@ -97,6 +97,7 @@ def Contient(aiguille, chaine):
     """
     Résultat True si le paramètre chaine contient aiguille
     """
+    return aiguille in chaine
 
 def EstImprimable(caractere):
     """
@@ -143,8 +144,8 @@ def main():
     print(DecodeBase64("VW5lIENoYWluZQ==")==b"Une Chaine")
     #print(EncodeAES_ECB("Elements",[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])==b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d')
     #print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
-    #print(Contient("OK","Le resultat est OK !")==True)
-    #print(Contient("OK","Le resultat est Ok !")==False)
+    print(Contient("OK","Le resultat est OK !")==True)
+    print(Contient("OK","Le resultat est Ok !")==False)
     #print(EstImprimable("A")==True)
     #print(EstImprimable("\x07")==False)
     #print(EstImprimable(" ")==True)
