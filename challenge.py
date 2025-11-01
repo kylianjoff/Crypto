@@ -77,7 +77,59 @@ def DecodeBase64(strMessage):
             decoded_bytes.append((bits >> j) & 0xFF)
     return bytes(decoded_bytes)
 
+def EncodeAES_ECB(strMessage, tabKey):
+    """
+    Chiffrement AES-ECB 128 bits de strMessage avec tabKey comme clef
+    La taille de chaine est quelconque et sera complété par des caractères espace si nécessaire
+    tabKey est un tableau de 16 éléments
+    Avant chiffrement la chaine est encodée en utf8
+    """
 
+def DecodeAES_ECB(strMessage, tabKey):
+    """
+    Dechiffrement AES-ECB de strMessage
+    La clef tabKey est un tableau de 16 éléments
+    Retourne un tableau d'octets
+    Les caractères espaces en fin de tableau seront supprimés
+    """
+
+def Contient(aiguille, chaine):
+    """
+    Résultat True si le paramètre chaine contient aiguille
+    """
+
+def EstImprimable(caractere):
+    """
+    Liste des caractères imprimables :
+    0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+    """
+
+def Remplace(chaine,avant,apres):
+    """
+    Remplace les occurrences de avant par apres dans chaine.
+    """
+
+def Extraire(chaine,separation,n):
+    """
+    Retourne la valeur du nième champ de chaine.
+    Les champs sont séparés par le caractère séparation.
+    """
+
+def Format(n):
+    """
+    Retourne une chaine de caractères de 4 caractères pour tout nombre entier de 0 à  9999
+    Les valeurs seront précédées de 0.
+    """
+
+def toTab(strMessage):
+    """
+    Encode une chaine en tableau d'octets. l'encodage utilisé est "utf-8
+    """
+
+def toStr(strMessage):
+    """
+    Decode un tableau d'octets en chaine utf-8
+    """
 
 def main():
     import sys
@@ -89,8 +141,20 @@ def main():
     print(Indice([1,2,3,4,5,6],3)==2)
     print(EncodeBase64(b"Une Chaine")==b"VW5lIENoYWluZQ==")
     print(DecodeBase64("VW5lIENoYWluZQ==")==b"Une Chaine")
-    print(EncodeBase64(b"Une Chaine"))
-    print(DecodeBase64("VW5lIENoYWluZQ=="))
+    #print(EncodeAES_ECB("Elements",[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])==b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d')
+    #print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
+    #print(Contient("OK","Le resultat est OK !")==True)
+    #print(Contient("OK","Le resultat est Ok !")==False)
+    #print(EstImprimable("A")==True)
+    #print(EstImprimable("\x07")==False)
+    #print(EstImprimable(" ")==True)
+    #print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
+    #print(Extraire("ROUGE,0034,4EF563",",",1)==34)
+    #print(Format(3)=="0003")
+    #print(Format(123)=="0123")
+    #print(toStr(b"\x41\x42")=="AB")
+    #print(toTab("CD")==b"\x43\x44")
+    return
 
 if __name__ == '__main__':
     main()
