@@ -95,11 +95,23 @@ def EncodeAES_ECB(strMessage, tabKey):
 
 def DecodeAES_ECB(strMessage, tabKey):
     """
-    Dechiffrement AES-ECB de strMessage
-    La clef tabKey est un tableau de 16 éléments
-    Retourne un tableau d'octets
-    Les caractères espaces en fin de tableau seront supprimés
+    Déchiffrement AES-ECB de strMessage.
+    - strMessage : tableau d'octets chiffré
+    - tabKey : tableau de 16 octets (clé AES-128)
+    Retourne un tableau d'octets.
+    Les caractères espaces ajoutés pour le padding seront supprimés à la fin.
     """
+    if len(tabKey) != 16:
+        raise ValueError("La clé doit contenir exactement 16 octets")
+    
+    key_bytes = bytes(tabKey)
+    cipher = AES.new(key_bytes, AES.MODE_ECB)
+
+    # Déchiffrement
+    decrypted_bytes = cipher.decrypt(strMessage)
+
+    # Supprimer les espaces ajoutés en fin de bloc
+    return decrypted_bytes.rstrip(b' ')
 
 def Contient(aiguille, chaine):
     """
