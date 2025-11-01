@@ -1,4 +1,4 @@
-BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 def EncodeXor(tabMessage, tabKey):
     """
@@ -33,61 +33,48 @@ def Indice(tableau, element):
 
 def EncodeBase64(tabMessage):
     """
-    Encode en Base64 le paramètre chaine
-    tabMessage contient le message sous forme de tableau d'octets
+    Encode en Base64 le paramètre tabMessage (tableau d'octets)
     Retourne un tableau d'octets
     """
-    result = ""
+    result = bytearray()
     padding = 0
     # Traiter les octets 3 par 3
     for i in range(0, len(tabMessage), 3):
-        chunk = data[i:i+3]
-
+        chunk = tabMessage[i:i+3]
         if len(chunk) < 3:
             padding = 3 - len(chunk)
             chunk += b'\x00' * padding
-
         # Convertir les 3 octets en 24 bits
         bits = (chunk[0] << 16) + (chunk[1] << 8) + chunk[2]
-
         # Extraire 4 groupes de 6 bits
         for j in range(18, -1, -6):
             index = (bits >> j) & 0x3F
-            result += BASE64_ALPHABET[index]
-
+            result.append(BASE64_ALPHABET[index])
     # Remplacer par '=' selon le padding
     if padding:
-        result = result[:-padding] + '=' * padding
-
-    return result
+        result = result[:-padding] + b'=' * padding
+    return bytes(result)
 
 def DecodeBase64(strMessage):
-    """
-    Decode la chaine encodé en Base64
-    strMessage doit être une chaine ASCII elle sera encodé en utf-8
-    retourne un tableau d'octets
-    """
-    padding = strMessage.count('=')
-    strMessage = strMessage.rstrip('=')
+    if isinstance(strMessage, str):
+        strMessage = strMessage.encode('ascii')  # convertir en bytes
     decoded_bytes = bytearray()
-
     # Traiter les caractères 4 par 4
     for i in range(0, len(strMessage), 4):
         chunk = strMessage[i:i+4]
-        # Convertir chaque caractère en 6 bits
+        # Compter le padding dans ce chunk
+        pad = chunk.count(b'=')
+        chunk = chunk.rstrip(b'=')
+        # Convertir chaque octet en 6 bits
         bits = 0
         for c in chunk:
             bits = (bits << 6) + BASE64_ALPHABET.index(c)
-
-        # Extraire les 3 octets
-        for j in range(16, -1, -8):
-            byte = (bits >> j) & 0xFF
-            decoded_bytes.append(byte)
-
-    # Supprimer les octets ajoutés à cause du padding
-    if padding:
-        decoded_bytes = decoded_bytes[:-padding]
-
+        # Ajouter des zéros si padding pour compléter 24 bits
+        bits <<= 6 * pad
+        # Extraire les octets réels
+        num_bytes = len(chunk) - 1 + pad
+        for j in range(16, 16 - 8 * (3 - pad), -8):
+            decoded_bytes.append((bits >> j) & 0xFF)
     return bytes(decoded_bytes)
 
 
@@ -97,6 +84,13 @@ def main():
     print(sys.version)
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
     print(DecodeXor(b"\n'..-","B".encode()).decode()=="Hello")
+    print(EncodeXor(b"GoodBye",b"ABA")==b'\x06-.%\x008$')
+    print(DecodeXor(b'\x0e42;8',b"ZWZ")=="Tchao".encode())
+    print(Indice([1,2,3,4,5,6],3)==2)
+    print(EncodeBase64(b"Une Chaine")==b"VW5lIENoYWluZQ==")
+    print(DecodeBase64("VW5lIENoYWluZQ==")==b"Une Chaine")
+    print(EncodeBase64(b"Une Chaine"))
+    print(DecodeBase64("VW5lIENoYWluZQ=="))
 
 if __name__ == '__main__':
     main()
