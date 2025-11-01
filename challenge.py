@@ -7,10 +7,11 @@ def EncodeXor(tabMessage, tabKey):
     tabKey contient la clef sous forme de tableau d'octets
     Retourne un tableau d'octets
     """
-    encode = []
-    for i in range(len(tabMessage)):
-        encode.append(tabMessage[i]^tabKey[i])
-    return encode
+    key_len = len(tabKey)
+    result = bytearray()
+    for i, b in enumerate(tabMessage):
+        result.append(b ^ tabKey[i % key_len])
+    return bytes(result)
 
 def DecodeXor(tabMessage, tabKey):
     """
@@ -94,6 +95,7 @@ def DecodeBase64(strMessage):
 def main():
     import sys
     print(sys.version)
+    print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
 
-if __main__ == '__main__':
+if __name__ == '__main__':
     main()
