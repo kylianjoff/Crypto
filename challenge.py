@@ -107,10 +107,11 @@ def EstImprimable(caractere):
     c_imprimables = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ "
     return Contient(caractere,c_imprimables)
 
-def Remplace(chaine,avant,apres):
+def Remplace(chaine, avant, apres):
     """
-    Remplace les occurrences de avant par apres dans chaine.
+    Remplace toutes les occurrences de 'avant' par 'apres' dans 'chaine'.
     """
+    return chaine.replace(avant, apres)
 
 def Extraire(chaine,separation,n):
     """
@@ -151,7 +152,7 @@ def main():
     print(EstImprimable("A")==True)
     print(EstImprimable("\x07")==False)
     print(EstImprimable(" ")==True)
-    #print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
+    print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
     #print(Extraire("ROUGE,0034,4EF563",",",1)==34)
     #print(Format(3)=="0003")
     #print(Format(123)=="0123")
