@@ -153,11 +153,13 @@ def toTab(strMessage):
     """
     Encode une chaine en tableau d'octets. l'encodage utilisé est "utf-8
     """
+    return strMessage.encode('utf-8')
 
 def toStr(strMessage):
     """
     Decode un tableau d'octets en chaine utf-8
     """
+    return strMessage.decode('utf-8')
 
 def main():
     import sys
@@ -180,8 +182,8 @@ def main():
     print(Extraire("ROUGE,0034,4EF563",",",1)==34)
     print(Format(3)=="0003")
     print(Format(123)=="0123")
-    #print(toStr(b"\x41\x42")=="AB")
-    #print(toTab("CD")==b"\x43\x44")
+    print(toStr(b"\x41\x42")=="AB")
+    print(toTab("CD")==b"\x43\x44")
     return
 
 if __name__ == '__main__':
