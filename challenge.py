@@ -96,6 +96,7 @@ def main():
     import sys
     print(sys.version)
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
+    print(DecodeXor(b"\n'..-","B".encode()).decode()=="Hello")
 
 if __name__ == '__main__':
     main()
