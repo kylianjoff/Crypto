@@ -113,11 +113,32 @@ def Remplace(chaine, avant, apres):
     """
     return chaine.replace(avant, apres)
 
-def Extraire(chaine,separation,n):
+def Extraire(chaine, separation, n):
     """
-    Retourne la valeur du nième champ de chaine.
-    Les champs sont séparés par le caractère séparation.
+    Retourne le nième champ de 'chaine', séparé par 'separation'.
+    Si le champ est numérique, les zéros initiaux sont retirés et on retourne un int.
+    Indexation : n = 0 pour le premier champ.
     """
+    champ = ""
+    compteur = 0
+
+    for c in chaine:
+        if c == separation:
+            if compteur == n:
+                break
+            champ = ""
+            compteur += 1
+        else:
+            champ += c
+
+    # Vérifie si c'était le dernier champ
+    if compteur != n:
+        return None
+
+    # Si le champ est composé uniquement de chiffres, le convertir en int
+    if champ.isdigit():
+        return int(champ)
+    return champ
 
 def Format(n):
     """
@@ -153,7 +174,7 @@ def main():
     print(EstImprimable("\x07")==False)
     print(EstImprimable(" ")==True)
     print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
-    #print(Extraire("ROUGE,0034,4EF563",",",1)==34)
+    print(Extraire("ROUGE,0034,4EF563",",",1)==34)
     #print(Format(3)=="0003")
     #print(Format(123)=="0123")
     #print(toStr(b"\x41\x42")=="AB")
