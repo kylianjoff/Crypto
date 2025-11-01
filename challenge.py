@@ -142,9 +142,12 @@ def Extraire(chaine, separation, n):
 
 def Format(n):
     """
-    Retourne une chaine de caractères de 4 caractères pour tout nombre entier de 0 à  9999
-    Les valeurs seront précédées de 0.
+    Retourne une chaîne de 4 caractères pour tout nombre entier de 0 à 9999,
+    avec des zéros initiaux si nécessaire.
     """
+    if not (0 <= n <= 9999):
+        raise ValueError("Le nombre doit être compris entre 0 et 9999")
+    return f"{n:04d}"
 
 def toTab(strMessage):
     """
@@ -175,8 +178,8 @@ def main():
     print(EstImprimable(" ")==True)
     print(Remplace("Ceci est une string typique","string","chaine")=="Ceci est une chaine typique")
     print(Extraire("ROUGE,0034,4EF563",",",1)==34)
-    #print(Format(3)=="0003")
-    #print(Format(123)=="0123")
+    print(Format(3)=="0003")
+    print(Format(123)=="0123")
     #print(toStr(b"\x41\x42")=="AB")
     #print(toTab("CD")==b"\x43\x44")
     return
