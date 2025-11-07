@@ -184,6 +184,9 @@ def toStr(strMessage):
 def main():
     import sys
     print(sys.version)
+    tests()
+
+def tests():
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
     print(DecodeXor(b"\n'..-","B".encode()).decode()=="Hello")
     print(EncodeXor(b"GoodBye",b"ABA")==b'\x06-.%\x008$')
@@ -192,7 +195,7 @@ def main():
     print(EncodeBase64(b"Une Chaine")==b"VW5lIENoYWluZQ==")
     print(DecodeBase64("VW5lIENoYWluZQ==")==b"Une Chaine")
     print(EncodeAES_ECB("Elements",[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])==b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d')
-    #print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
+    print(DecodeAES_ECB(b'Z\xf5T\xef\x9f\x8bg\x15\xb3E\xe7&gm\x96\x1d',[161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]).strip()==b"Elements")
     print(Contient("OK","Le resultat est OK !")==True)
     print(Contient("OK","Le resultat est Ok !")==False)
     print(EstImprimable("A")==True)
