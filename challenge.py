@@ -129,22 +129,27 @@ def EncodeAES_ECB(strMessage, tabKey):
 
 def DecodeAES_ECB(strMessage, tabKey):
     """
-    Déchiffrement AES-ECB de strMessage.
+    Déchiffrement AES-ECB.
     - strMessage : tableau d'octets chiffré
     - tabKey : tableau de 16 octets (clé AES-128)
-    Retourne un tableau d'octets.
+    Retourne : tableau d'octets (plaintext)
     Les caractères espaces ajoutés pour le padding seront supprimés à la fin.
+    Vérifie que la longueur est un multiple de 16 octets avant déchiffrement.
     """
+
     if len(tabKey) != 16:
         raise ValueError("La clé doit contenir exactement 16 octets")
-    
-    key_bytes = bytes(tabKey)
-    cipher = AES.new(key_bytes, AES.MODE_ECB)
 
-    # Déchiffrement
+    key_bytes = bytes(tabKey)
+
+    # Vérifier l'alignement sur bloc AES
+    if len(strMessage) % AES.block_size != 0:
+        raise ValueError(f"Le ciphertext doit avoir une longueur multiple de {AES.block_size} (len={len(strMessage)})")
+
+    cipher = AES.new(key_bytes, AES.MODE_ECB)
     decrypted_bytes = cipher.decrypt(strMessage)
 
-    # Supprimer les espaces ajoutés en fin de bloc
+    # Retirer les espaces ajoutés pour le padding (compatible avec ton EncodeAES_ECB)
     return decrypted_bytes.rstrip(b' ')
 
 def Contient(aiguille, chaine):
@@ -215,17 +220,87 @@ def toStr(strMessage):
     """
     return strMessage.decode('utf-8')
 
+def ListeClesFromFile(nomFichier):
+    """
+    Lit un fichier texte contenant une clé par ligne.
+    Retourne une liste de chaînes (clés).
+    Essaie plusieurs encodages courants puis, en dernier ressort,
+    lit en binaire et décode avec 'replace' pour éviter UnicodeDecodeError.
+    """
+    encodings_to_try = ['utf-8', 'cp1252', 'iso-8859-1']
+
+    for enc in encodings_to_try:
+        try:
+            with open(nomFichier, 'r', encoding=enc, errors='strict') as fichier:
+                # lecture simple et nettoyage
+                listeCles = [ligne.strip() for ligne in fichier if ligne.strip()]
+            return listeCles
+        except UnicodeDecodeError:
+            # on essaie l'encodage suivant
+            continue
+
+    # fallback sûr : lire en binaire et décoder en remplaçant les octets invalides
+    listeCles = []
+    with open(nomFichier, 'rb') as f:
+        for raw in f:
+            # decode en utf-8 mais remplace les octets invalides par �
+            ligne = raw.decode('utf-8', errors='replace').strip()
+            if ligne:
+                listeCles.append(ligne)
+    return listeCles
+
+
+def AttaqueDictionnaire(tabMessage, listeCles, mode):
+    """
+    Attaque par dictionnaire sur un message chiffré avec XOR ou AES-ECB
+    tabMessage : tableau d'octets chiffré
+    listeCles : liste de chaînes (clés possibles)
+    mode : "XOR" ou "AES"
+    Retourne la clé trouvée ou None si aucune clé n'a permis de déchiffrer un message
+    avec uniquement des caractères imprimables.
+    """
+    for cle in listeCles:
+        if mode == "XOR":
+            decrypted = DecodeXor(tabMessage, cle.encode())
+        elif mode == "AES":
+            key_bytes = cle.encode()
+            if len(key_bytes) != 16:
+                continue
+            decrypted = DecodeAES_ECB(tabMessage, list(key_bytes))
+        else:
+            raise ValueError("Mode inconnu. Utilisez 'XOR' ou 'AES'.")
+
+        if all(EstImprimable(chr(b)) for b in decrypted):
+            return cle
+    return None
+
 def main():
     import sys
     print(sys.version)
+    
     msg = "Coucou"
     key = "AAA".encode()
     msgCompteur = AjoutCompteur(msg,42)
     msgSalage = Salage(msgCompteur.encode())
-    print(msgSalage)
-    print(EncodeBase64(EncodeXor(msgSalage,key)))
-    print(EncodeBase64(EncodeAES_ECB(msgSalage, [161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])))
-    print(EncodeBase64(msgSalage))
+    print("Message salé :", msgSalage)
+    print("XOR encodé base64 :", EncodeBase64(EncodeXor(msgSalage,key)))
+    
+    # Cipher AES sans base64
+    tabKey = [161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]
+    msgAES_bytes = EncodeAES_ECB(msgSalage, tabKey)   # <-- conserver bytes
+    print("AES ciphertext (raw bytes) :", msgAES_bytes)
+    print("AES ciphertext base64 pour affichage :", EncodeBase64(msgAES_bytes))  # facultatif pour afficher
+    
+    # Attaque dictionnaire sur bytes, pas sur base64
+    # msgAES_bytes : ciphertext AES en bytes (pas base64)
+    result = AttaqueDictionnaire(msgAES_bytes, ListeClesFromFile("francais.txt"), "AES")
+    if result is None:
+        print("[*] Aucune clé trouvée dans la liste.")
+    else:
+        print("[+] Clé trouvée :", result)
+        # afficher le plaintext pour vérification
+        plaintext = DecodeAES_ECB(msgAES_bytes, list(result.encode()))
+        print("[+] Plaintext :", plaintext)
 
 def tests():
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
