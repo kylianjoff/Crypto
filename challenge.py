@@ -1,6 +1,24 @@
 from Crypto.Cipher import AES
+import os
 
 BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+def AjoutCompteur(tabMessage):
+    """
+    Ajout d'un compteur au message sur 4 caractères
+    tabMessage contient le message sous forme de tableau d'octets
+    Retourne un tableau d'octets
+    """
+
+def Salage(tabMessage):
+    """
+    Ajout du salage au message sur 8 caractères
+    tabMessage contient le message sous forme de tableau d'octets
+    Retourne un tableau d'octets
+    """
+    sel = os.random(8)
+    messageSalted = tabMessage + sel
+    return messageSalted
 
 def EncodeXor(tabMessage, tabKey):
     """
