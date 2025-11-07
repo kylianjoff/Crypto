@@ -1,14 +1,18 @@
 from Crypto.Cipher import AES
-import os
+import random
+import string
 
 BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-def AjoutCompteur(tabMessage):
+def AjoutCompteur(tabMessage, compteur=1):
     """
     Ajout d'un compteur au message sur 4 caractères
     tabMessage contient le message sous forme de tableau d'octets
     Retourne un tableau d'octets
     """
+    compteur_byte = Format(compteur)
+    message_compte = tabMessage + compteur_byte
+    return message_compte
 
 def Salage(tabMessage):
     """
@@ -16,8 +20,8 @@ def Salage(tabMessage):
     tabMessage contient le message sous forme de tableau d'octets
     Retourne un tableau d'octets
     """
-    sel = os.random(8)
-    messageSalted = tabMessage + sel
+    sel = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    messageSalted = tabMessage + sel.encode()
     return messageSalted
 
 def EncodeXor(tabMessage, tabKey):
@@ -98,13 +102,25 @@ def DecodeBase64(strMessage):
     return bytes(decoded_bytes)
 
 def EncodeAES_ECB(strMessage, tabKey):
+    """
+    Chiffrement AES-128 ECB
+    strMessage : str ou bytes
+    tabKey : liste ou bytes de 16 octets
+    Retourne : bytes
+    """
     if len(tabKey) != 16:
         raise ValueError("La clé doit contenir exactement 16 octets")
     
     key_bytes = bytes(tabKey)
     cipher = AES.new(key_bytes, AES.MODE_ECB)
     
-    message_bytes = strMessage.encode('utf-8')
+    # Si strMessage est une chaîne, l'encoder
+    if isinstance(strMessage, str):
+        message_bytes = strMessage.encode('utf-8')
+    else:
+        message_bytes = bytes(strMessage)  # accepte déjà bytes ou bytearray
+    
+    # Padding pour compléter les blocs de 16 octets
     if len(message_bytes) % 16 != 0:
         padding_len = 16 - (len(message_bytes) % 16)
         message_bytes += b' ' * padding_len
@@ -202,7 +218,14 @@ def toStr(strMessage):
 def main():
     import sys
     print(sys.version)
-    tests()
+    msg = "Coucou"
+    key = "AAA".encode()
+    msgCompteur = AjoutCompteur(msg,42)
+    msgSalage = Salage(msgCompteur.encode())
+    print(msgSalage)
+    print(EncodeBase64(EncodeXor(msgSalage,key)))
+    print(EncodeBase64(EncodeAES_ECB(msgSalage, [161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136])))
+    print(EncodeBase64(msgSalage))
 
 def tests():
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')
