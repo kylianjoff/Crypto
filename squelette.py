@@ -13,7 +13,7 @@ PORT = 10801
 GROUPE = "GROUPE_BOURGEOIS_JULIA"
 SECRET = "........"
 
-MODE_MQTT = "LECT" # "LECT" pour écoute seule, "ECR" pour écriture seule
+MODE_MQTT = "ECR" # "LECT" pour écoute seule, "ECR" pour écriture seule
 
 LOG_MQTT_ECOUTE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écoute
 MQTT_LOGIN_ECOUTE = "" # user_x_y
@@ -21,15 +21,15 @@ MQTT_PASSWORD_ECOUTE = "" #user_x_y
 CLIENT_ID_ECOUTE = "GROUPE_BOURGEOIS_JULIA" # user_x_y
 
 LOG_MQTT_ECRITURE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écriture
-MQTT_LOGIN_ECRITURE = "" # user_x_y
-MQTT_PASSWORD_ECRITURE = "" # user_x_y
+MQTT_LOGIN_ECRITURE = "ALICE" # user_x_y
+MQTT_PASSWORD_ECRITURE = "W0ND3RLAND" # user_x_y
 CLIENT_ID_ECRITURE = "GROUPE_BOURGEOIS_JULIA" # user_x_y
 
 # Topics MQTT
 
 #TOPIC_ECOUTE = "/ISIMA/SECRET_ZZZ/CHALLENGE_2/DEFI_Y/GROUPE_BOURGEOIS_JULIA/LEDS/LED1"
 TOPIC_ECOUTE = "/ISIMA/#"
-TOPIC_ECRITURE = "/ISIMA/SECRET_ZZZ/CHALLENGE_2/DEFI_Y/GROUPE_BOURGEOIS_JULIA/LEDS/LED2"
+TOPIC_ECRITURE = "/ISIMA/SECRET_ECHELON/CHALLENGE_2/DEFI_1/GROUPE_BOURGEOIS_JULIA/LEDS/LED2"
 
 # Fonctions d'encodage / décodage
 
@@ -414,7 +414,7 @@ try:
         print("[MODE ÉCRITURE] Publication activée sur :", TOPIC_ECRITURE)
         
         client.loop_start()
-        client.publish(TOPIC_ECRITURE, payload=EncodeBase64(b"OFF"), qos=0)
+        client.publish(TOPIC_ECRITURE, payload=EncodeBase64(b"ON"), qos=0)
         print("Message envoyé.")
         if(client.hacked):
             print("Normalement on a réussi")

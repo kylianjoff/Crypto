@@ -374,6 +374,8 @@ def dictionnaire(tabMessage,path):
 def main():
     import sys
     print(sys.version)
+    
+
     key="tachetions"
     bkey=key.encode()
     keyfilled=bkey+bytearray(16-len(bkey))

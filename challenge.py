@@ -277,9 +277,21 @@ def AttaqueDictionnaire(tabMessage, listeCles, mode):
 def main():
     import sys
     print(sys.version)
-
-    print(EncodeBase64(b"ON")==b"T04=")
-    print(DecodeBase64("T04=")==b"ON")
+    tab = [
+        "nkqIBdK4s1QtHz1hOQCDlg==",
+        "vRT1fWBSvXlesFCZAyTRqg==",
+        "J66c9WxtK5opCyd80WeGOA==",
+        "1oictkafOojduBPHSAUJ7g==",
+        "27Xx+twTQ1J+SkGP40CY9A==",
+        "zmv2nE78jl5UCYd+W6eknw==",
+        "dt5AE0588flu8f0nciO+Lw==",
+        "aYjW2MMRCnpmfVoA2eYA5A==",
+        "n3t4/WK1aKTDVVOYMsRXPA==",
+        "qwwNhIERtA84wVwd4RACiw=="
+    ]
+    msg = DecodeBase64("nkqIBdK4s1QtHz1hOQCDlg==")
+    print(msg)
+    
     
     """msg = "Coucou"
     key = "a".encode()
