@@ -279,7 +279,7 @@ def main():
     print(sys.version)
     
     msg = "Coucou"
-    key = "AAA".encode()
+    key = "a".encode()
     msgCompteur = AjoutCompteur(msg,42)
     msgSalage = Salage(msgCompteur.encode())
     print("Message salé :", msgSalage)
