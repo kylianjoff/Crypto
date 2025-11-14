@@ -409,11 +409,12 @@ try:
         print("[MODE ÉCRITURE] Publication activée sur :", TOPIC_ECRITURE)
         
         client.loop_start()
-        while not client.hacked:
-            # Exemple de publication (change data si besoin)
-            client.publish(TOPIC_ECRITURE, payload=EncodeBase64(b"ON"), qos=0)
-            print("Message envoyé.")
-            time.sleep(1)
+        client.publish(TOPIC_ECRITURE, payload=EncodeBase64(b"OFF"), qos=0)
+        print("Message envoyé.")
+        if(client.hacked):
+            print("Normalement on a réussi")
+        else:
+            print("Je crois que c'est pas bon")
 
     else:  # ------------------- MODE ÉCOUTE
         if LOG_MQTT_ECOUTE:
@@ -435,6 +436,9 @@ except KeyboardInterrupt:
 
 finally:
     client.loop_stop()
-    client.unsubscribe("#")
+    if(MODE_MQTT == "LECT"):
+        client.unsubscribe(TOPIC_ECOUTE)
+    else:
+        client.unsubscribe(TOPIC_ECRITURE)
     client.disconnect()
     print("Finished.")
