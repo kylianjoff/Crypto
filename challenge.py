@@ -277,8 +277,11 @@ def AttaqueDictionnaire(tabMessage, listeCles, mode):
 def main():
     import sys
     print(sys.version)
+
+    print(EncodeBase64(b"ON")==b"T04=")
+    print(DecodeBase64("T04=")==b"ON")
     
-    msg = "Coucou"
+    """msg = "Coucou"
     key = "a".encode()
     msgCompteur = AjoutCompteur(msg,42)
     msgSalage = Salage(msgCompteur.encode())
@@ -300,7 +303,7 @@ def main():
         print("[+] Clé trouvée :", result)
         # afficher le plaintext pour vérification
         plaintext = DecodeAES_ECB(msgAES_bytes, list(result.encode()))
-        print("[+] Plaintext :", plaintext)
+        print("[+] Plaintext :", plaintext)"""
 
 def tests():
     print(EncodeXor("Bonjour".encode(),"A".encode())==b'\x03./+.43')

@@ -2,6 +2,7 @@ from Crypto.Cipher import AES
 import paho.mqtt.client as mqtt
 import time
 import random
+import string
 
 BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
@@ -11,6 +12,8 @@ IP = "172.16.32.7"
 PORT = 10801
 GROUPE = "GROUPE_BOURGEOIS_JULIA"
 SECRET = "........"
+
+CLIENT_ID = "" # user_x_y
 
 MODE_MQTT = "LECT" # "LECT" pour écoute seule, "ECR" pour écriture seule
 
@@ -356,7 +359,7 @@ def Salage(tabMessage):
     """
     sel = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
     messageSalted = tabMessage + sel.encode()
-    return messageSalteds
+    return messageSalted
 
 # Callbacks MQTT
 
@@ -388,7 +391,7 @@ def on_message(client, userdata, msg):
 def on_publish(client, userdata, mid):
     print("--on_publish callback --mid: " + str(mid) )
 
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="GROUPE")
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=CLIENT_ID)
 client.connected=False
 client.hacked=False
 client.on_connect = on_connect
@@ -397,25 +400,41 @@ client.on_message = on_message
 client.on_publish = on_publish
 
 try:
-    if(LOG_MQTT):
-        client.username_pw_set(username=MQTT_LOGIN, password=MQTT_PASSWORD)
     client.connect(IP, PORT)
-    client.subscribe(TOPIC_ECOUTE, qos=0)
-    client.loop_start()
 
-    while not client.hacked:
-        time.sleep(0.5)
-        print(".",end='')
+    if MODE_MQTT == "ECR":  # ------------------- MODE ÉCRITURE
+        if LOG_MQTT_ECRITURE:
+            client.username_pw_set(username=MQTT_LOGIN_ECRITURE, password=MQTT_PASSWORD_ECRITURE)
 
+        print("[MODE ÉCRITURE] Publication activée sur :", TOPIC_ECRITURE)
+        
+        client.loop_start()
+        while not client.hacked:
+            # Exemple de publication (change data si besoin)
+            client.publish(TOPIC_ECRITURE, payload=EncodeBase64(b"ON"), qos=0)
+            print("Message envoyé.")
+            time.sleep(1)
+
+    else:  # ------------------- MODE ÉCOUTE
+        if LOG_MQTT_ECOUTE:
+            client.username_pw_set(username=MQTT_LOGIN_ECOUTE, password=MQTT_PASSWORD_ECOUTE)
+
+        print("[MODE ÉCOUTE] Abonné à :", TOPIC_ECOUTE)
+        client.subscribe(TOPIC_ECOUTE, qos=0)
+
+        client.loop_start()
+        while not client.hacked:
+            time.sleep(0.5)
+            print(".", end="")
 
 except ConnectionRefusedError:
-    print("Connection Failed Bad IP / PORT")
+    print("Connection Failed: Bad IP / PORT")
 
 except KeyboardInterrupt:
-    print("\nBreak signal")
-    pass
+    print("\nArrêt demandé par l'utilisateur.")
 
-client.loop_stop()
-client.unsubscribe("#")
-client.disconnect()
-print("Finished.")
+finally:
+    client.loop_stop()
+    client.unsubscribe("#")
+    client.disconnect()
+    print("Finished.")
