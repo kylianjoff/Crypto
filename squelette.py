@@ -18,7 +18,7 @@ MODE_MQTT = "LECT" # "LECT" pour écoute seule, "ECR" pour écriture seule
 LOG_MQTT_ECOUTE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écoute
 MQTT_LOGIN_ECOUTE = "" # user_x_y
 MQTT_PASSWORD_ECOUTE = "" #user_x_y
-CLIENT_ID_ECOUTE = "user_2_1" # user_x_y
+CLIENT_ID_ECOUTE = "USER_2_1" # user_x_y
 
 LOG_MQTT_ECRITURE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écriture
 MQTT_LOGIN_ECRITURE = "" # user_x_y
