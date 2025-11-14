@@ -358,7 +358,11 @@ def dictionnaire(tabMessage,path):
     res=[]
     for key in keys:
         bkey=key.encode()
-        keyfilled=bkey+bytearray(16-len(bkey))
+        keyfilled=bkey
+        if (len(keyfilled)>16):
+            keyfilled=bkey[0:16]
+        if (len(bkey)<16):
+            keyfilled=bkey+bytearray(16-len(bkey))
         test =DecodeAES_ECB(tabMessage,keyfilled)
         if (all([EstImprimable(chr(b)) for b in test])):
             res.append(key)
@@ -379,7 +383,8 @@ def main():
     msgSalage = Salage(msgCompteur.encode())
     
     msgxor=EncodeAES_ECB(msgSalage,keyfilled)
-    dictionnaire(msgxor,"./francais.txt")
+    a=dictionnaire(msgxor,"./francais.txt")
+    print(a)
     #tab=ForceBruteXor(msgxor,52)
     #print(tab)
     '''msg = "Coucou"
