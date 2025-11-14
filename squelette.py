@@ -377,14 +377,14 @@ def on_message(client, userdata, msg):
         print("\nWell done !")
 
     #Evite de travailler sur ces propres messages
-    if not ("GROUPE_XX" in msg.topic):
+    if not ("GROUPE_BOURGEOIS_JULIA" in msg.topic):
         return
 
     #Construction du nouveau payload ICI
 
     if False:#si construction payload OK :
         topic=msg.topic
-        topic=topic.replace("GROUPE_XX",GROUPE)
+        topic=topic.replace("GROUPE_BOURGEOIS_JULIA",GROUPE)
         topic=topic.replace("LED1","LED2")
         client.publish(topic,newpayload)
 
@@ -441,4 +441,4 @@ finally:
     else:
         client.unsubscribe(TOPIC_ECRITURE)
     client.disconnect()
-    print("Finished.")
+    print("Le script est fini !")
