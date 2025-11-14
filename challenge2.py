@@ -1,4 +1,4 @@
-'''from Crypto.Cipher import AES'''
+from Crypto.Cipher import AES
 import random
 import string
 
@@ -6,7 +6,7 @@ BASE64_ALPHABET = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 
 def AjoutCompteur(tabMessage, compteur=1):
     """
-    Ajout d'un compteur au message sur 4 caractères
+    Ajout d'un compteur au message sur 4 caractÃ¨res
     tabMessage contient le message sous forme de tableau d'octets
     Retourne un tableau d'octets
     """
@@ -16,7 +16,7 @@ def AjoutCompteur(tabMessage, compteur=1):
 
 def Salage(tabMessage):
     """
-    Ajout du salage au message sur 8 caractères
+    Ajout du salage au message sur 8 caractÃ¨res
     tabMessage contient le message sous forme de tableau d'octets
     Retourne un tableau d'octets
     """
@@ -48,7 +48,7 @@ def DecodeXor(tabMessage, tabKey):
 
 def Indice(tableau, element):
     """
-    Retourne l'indice de l'élément du tableau
+    Retourne l'indice de l'Ã©lÃ©ment du tableau
     """
     for i in range(len(tableau)):
         if tableau[i] == element:
@@ -57,7 +57,7 @@ def Indice(tableau, element):
 
 def EncodeBase64(tabMessage):
     """
-    Encode en Base64 le paramètre tabMessage (tableau d'octets)
+    Encode en Base64 le paramÃ¨tre tabMessage (tableau d'octets)
     Retourne un tableau d'octets
     """
     result = bytearray()
@@ -83,7 +83,7 @@ def DecodeBase64(strMessage):
     if isinstance(strMessage, str):
         strMessage = strMessage.encode('ascii')  # convertir en bytes
     decoded_bytes = bytearray()
-    # Traiter les caractères 4 par 4
+    # Traiter les caractÃ¨res 4 par 4
     for i in range(0, len(strMessage), 4):
         chunk = strMessage[i:i+4]
         # Compter le padding dans ce chunk
@@ -93,9 +93,9 @@ def DecodeBase64(strMessage):
         bits = 0
         for c in chunk:
             bits = (bits << 6) + BASE64_ALPHABET.index(c)
-        # Ajouter des zéros si padding pour compléter 24 bits
+        # Ajouter des zÃ©ros si padding pour complÃ©ter 24 bits
         bits <<= 6 * pad
-        # Extraire les octets réels
+        # Extraire les octets rÃ©els
         num_bytes = len(chunk) - 1 + pad
         for j in range(16, 16 - 8 * (3 - pad), -8):
             decoded_bytes.append((bits >> j) & 0xFF)
@@ -109,18 +109,18 @@ def EncodeAES_ECB(strMessage, tabKey):
     Retourne : bytes
     """
     if len(tabKey) != 16:
-        raise ValueError("La clé doit contenir exactement 16 octets")
+        raise ValueError("La clÃ© doit contenir exactement 16 octets")
     
     key_bytes = bytes(tabKey)
     cipher = AES.new(key_bytes, AES.MODE_ECB)
     
-    # Si strMessage est une chaîne, l'encoder
+    # Si strMessage est une chaÃ®ne, l'encoder
     if isinstance(strMessage, str):
         message_bytes = strMessage.encode('utf-8')
     else:
-        message_bytes = bytes(strMessage)  # accepte déjà bytes ou bytearray
+        message_bytes = bytes(strMessage)  # accepte dÃ©jÃ  bytes ou bytearray
     
-    # Padding pour compléter les blocs de 16 octets
+    # Padding pour complÃ©ter les blocs de 16 octets
     if len(message_bytes) % 16 != 0:
         padding_len = 16 - (len(message_bytes) % 16)
         message_bytes += b' ' * padding_len
@@ -129,38 +129,38 @@ def EncodeAES_ECB(strMessage, tabKey):
 
 def DecodeAES_ECB(strMessage, tabKey):
     """
-    Déchiffrement AES-ECB.
-    - strMessage : tableau d'octets chiffré
-    - tabKey : tableau de 16 octets (clé AES-128)
+    DÃ©chiffrement AES-ECB.
+    - strMessage : tableau d'octets chiffrÃ©
+    - tabKey : tableau de 16 octets (clÃ© AES-128)
     Retourne : tableau d'octets (plaintext)
-    Les caractères espaces ajoutés pour le padding seront supprimés à la fin.
-    Vérifie que la longueur est un multiple de 16 octets avant déchiffrement.
+    Les caractÃ¨res espaces ajoutÃ©s pour le padding seront supprimÃ©s Ã  la fin.
+    VÃ©rifie que la longueur est un multiple de 16 octets avant dÃ©chiffrement.
     """
 
     if len(tabKey) != 16:
-        raise ValueError("La clé doit contenir exactement 16 octets")
+        raise ValueError("La clÃ© doit contenir exactement 16 octets")
 
     key_bytes = bytes(tabKey)
 
-    # Vérifier l'alignement sur bloc AES
+    # VÃ©rifier l'alignement sur bloc AES
     if len(strMessage) % AES.block_size != 0:
         raise ValueError(f"Le ciphertext doit avoir une longueur multiple de {AES.block_size} (len={len(strMessage)})")
 
     cipher = AES.new(key_bytes, AES.MODE_ECB)
     decrypted_bytes = cipher.decrypt(strMessage)
 
-    # Retirer les espaces ajoutés pour le padding (compatible avec ton EncodeAES_ECB)
+    # Retirer les espaces ajoutÃ©s pour le padding (compatible avec ton EncodeAES_ECB)
     return decrypted_bytes.rstrip(b' ')
 
 def Contient(aiguille, chaine):
     """
-    Résultat True si le paramètre chaine contient aiguille
+    RÃ©sultat True si le paramÃ¨tre chaine contient aiguille
     """
     return aiguille in chaine
 
 def EstImprimable(caractere):
     """
-    Liste des caractères imprimables :
+    Liste des caractÃ¨res imprimables :
     0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
     """
     c_imprimables = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ "
@@ -174,8 +174,8 @@ def Remplace(chaine, avant, apres):
 
 def Extraire(chaine, separation, n):
     """
-    Retourne le nième champ de 'chaine', séparé par 'separation'.
-    Si le champ est numérique, les zéros initiaux sont retirés et on retourne un int.
+    Retourne le niÃ¨me champ de 'chaine', sÃ©parÃ© par 'separation'.
+    Si le champ est numÃ©rique, les zÃ©ros initiaux sont retirÃ©s et on retourne un int.
     Indexation : n = 0 pour le premier champ.
     """
     champ = ""
@@ -190,27 +190,27 @@ def Extraire(chaine, separation, n):
         else:
             champ += c
 
-    # Vérifie si c'était le dernier champ
+    # VÃ©rifie si c'Ã©tait le dernier champ
     if compteur != n:
         return None
 
-    # Si le champ est composé uniquement de chiffres, le convertir en int
+    # Si le champ est composÃ© uniquement de chiffres, le convertir en int
     if champ.isdigit():
         return int(champ)
     return champ
 
 def Format(n):
     """
-    Retourne une chaîne de 4 caractères pour tout nombre entier de 0 à 9999,
-    avec des zéros initiaux si nécessaire.
+    Retourne une chaÃ®ne de 4 caractÃ¨res pour tout nombre entier de 0 Ã  9999,
+    avec des zÃ©ros initiaux si nÃ©cessaire.
     """
     if not (0 <= n <= 9999):
-        raise ValueError("Le nombre doit être compris entre 0 et 9999")
+        raise ValueError("Le nombre doit Ãªtre compris entre 0 et 9999")
     return f"{n:04d}"
 
 def toTab(strMessage):
     """
-    Encode une chaine en tableau d'octets. l'encodage utilisé est "utf-8
+    Encode une chaine en tableau d'octets. l'encodage utilisÃ© est "utf-8
     """
     return strMessage.encode('utf-8')
 
@@ -222,10 +222,10 @@ def toStr(strMessage):
 
 def ListeClesFromFile(nomFichier):
     """
-    Lit un fichier texte contenant une clé par ligne.
-    Retourne une liste de chaînes (clés).
+    Lit un fichier texte contenant une clÃ© par ligne.
+    Retourne une liste de chaÃ®nes (clÃ©s).
     Essaie plusieurs encodages courants puis, en dernier ressort,
-    lit en binaire et décode avec 'replace' pour éviter UnicodeDecodeError.
+    lit en binaire et dÃ©code avec 'replace' pour Ã©viter UnicodeDecodeError.
     """
     encodings_to_try = ['utf-8', 'cp1252', 'iso-8859-1']
 
@@ -239,11 +239,11 @@ def ListeClesFromFile(nomFichier):
             # on essaie l'encodage suivant
             continue
 
-    # fallback sûr : lire en binaire et décoder en remplaçant les octets invalides
+    # fallback sÃ»r : lire en binaire et dÃ©coder en remplaÃ§ant les octets invalides
     listeCles = []
     with open(nomFichier, 'rb') as f:
         for raw in f:
-            # decode en utf-8 mais remplace les octets invalides par �
+            # decode en utf-8 mais remplace les octets invalides par ï¿½
             ligne = raw.decode('utf-8', errors='replace').strip()
             if ligne:
                 listeCles.append(ligne)
@@ -252,12 +252,12 @@ def ListeClesFromFile(nomFichier):
 
 def AttaqueDictionnaire(tabMessage, listeCles, mode):
     """
-    Attaque par dictionnaire sur un message chiffré avec XOR ou AES-ECB
-    tabMessage : tableau d'octets chiffré
-    listeCles : liste de chaînes (clés possibles)
+    Attaque par dictionnaire sur un message chiffrÃ© avec XOR ou AES-ECB
+    tabMessage : tableau d'octets chiffrÃ©
+    listeCles : liste de chaÃ®nes (clÃ©s possibles)
     mode : "XOR" ou "AES"
-    Retourne la clé trouvée ou None si aucune clé n'a permis de déchiffrer un message
-    avec uniquement des caractères imprimables.
+    Retourne la clÃ© trouvÃ©e ou None si aucune clÃ© n'a permis de dÃ©chiffrer un message
+    avec uniquement des caractÃ¨res imprimables.
     """
     for cle in listeCles:
         if mode == "XOR":
@@ -315,7 +315,7 @@ def ForceBruteXor4(tabMessage):
             
 def ForceBruteXorSetKeySize(tabMessage,keysize):
     '''
-    Fonction prenant en argument le message et la taille de la clé et qui brute force la clé
+    Fonction prenant en argument le message et la taille de la clÃ© et qui brute force la clÃ©
     Retourne une liste de liste des character possible pour chaque position
     '''
     indice_char=0
@@ -337,8 +337,8 @@ def ForceBruteXorSetKeySize(tabMessage,keysize):
 
 def ForceBruteXor(tabMessage,upperkeysize):
     '''
-    Bruteforce la clé d'un message tabMessage crypté en Xor avec une taille de clé allant jusqu'a upperkeysize
-    Retourne une liste contenant la clé trouvée
+    Bruteforce la clÃ© d'un message tabMessage cryptÃ© en Xor avec une taille de clÃ© allant jusqu'a upperkeysize
+    Retourne une liste contenant la clÃ© trouvÃ©e
     10 seconde pour upperkeysize=15
     36 seconde pour upperkeysize=30
     1:40 pour upperkeysize=52
@@ -352,26 +352,42 @@ def ForceBruteXor(tabMessage,upperkeysize):
         print(keysize)
     return(res)
 
+def dictionnaire(tabMessage,path):
+    f=open(path,'r')
+    keys=f.read().splitlines()
+    res=[]
+    for key in keys:
+        bkey=key.encode()
+        keyfilled=bkey+bytearray(16-len(bkey))
+        test =DecodeAES_ECB(tabMessage,keyfilled)
+        if (all([EstImprimable(chr(b)) for b in test])):
+            res.append(key)
+            break
+        print(key)
+    return(res)
 
 
 def main():
     import sys
     print(sys.version)
-    cle="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    msg="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ "*len(cle)
+    key="tachetions"
+    bkey=key.encode()
+    keyfilled=bkey+bytearray(16-len(bkey))
+    print("Key length :", len(keyfilled))
+    msg="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ "
     msgCompteur = AjoutCompteur(msg,42)
     msgSalage = Salage(msgCompteur.encode())
     
-    msgxor=EncodeXor(msgSalage,cle.encode())
-    
+    msgxor=EncodeAES_ECB(msgSalage,keyfilled)
+    dictionnaire(msgxor,"./francais.txt")
     #tab=ForceBruteXor(msgxor,52)
     #print(tab)
     '''msg = "Coucou"
     key = "AAA".encode()
     msgCompteur = AjoutCompteur(msg,42)
     msgSalage = Salage(msgCompteur.encode())
-    print("Message salé :", msgSalage)
-    print("XOR encodé base64 :", EncodeBase64(EncodeXor(msgSalage,key)))
+    print("Message salÃ© :", msgSalage)
+    print("XOR encodÃ© base64 :", EncodeBase64(EncodeXor(msgSalage,key)))
     
     # Cipher AES sans base64
     tabKey = [161, 216, 149, 60, 177, 180, 108, 234, 176, 12, 149, 45, 255, 157, 80, 136]
@@ -383,10 +399,10 @@ def main():
     # msgAES_bytes : ciphertext AES en bytes (pas base64)
     result = AttaqueDictionnaire(msgAES_bytes, ListeClesFromFile("francais.txt"), "AES")
     if result is None:
-        print("[*] Aucune clé trouvée dans la liste.")
+        print("[*] Aucune clÃ© trouvÃ©e dans la liste.")
     else:
-        print("[+] Clé trouvée :", result)
-        # afficher le plaintext pour vérification
+        print("[+] ClÃ© trouvÃ©e :", result)
+        # afficher le plaintext pour vÃ©rification
         plaintext = DecodeAES_ECB(msgAES_bytes, list(result.encode()))
         print("[+] Plaintext :", plaintext)'''
 
