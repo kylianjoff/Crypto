@@ -13,21 +13,22 @@ PORT = 10801
 GROUPE = "GROUPE_BOURGEOIS_JULIA"
 SECRET = "........"
 
-CLIENT_ID = "" # user_x_y
-
 MODE_MQTT = "LECT" # "LECT" pour écoute seule, "ECR" pour écriture seule
 
 LOG_MQTT_ECOUTE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écoute
 MQTT_LOGIN_ECOUTE = "" # user_x_y
 MQTT_PASSWORD_ECOUTE = "" #user_x_y
+CLIENT_ID_ECOUTE = "" # user_x_y
 
 LOG_MQTT_ECRITURE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écriture
 MQTT_LOGIN_ECRITURE = "" # user_x_y
 MQTT_PASSWORD_ECRITURE = "" # user_x_y
+CLIENT_ID_ECRITURE = "" # user_x_y
 
 # Topics MQTT
 
-TOPIC_ECOUTE = "ISIMA/SECRET_ZZZ/CHALLENGE_2/DEFI_Y/GROUPE_BOURGEOIS_JULIA/LEDS/LED1"
+#TOPIC_ECOUTE = "ISIMA/SECRET_ZZZ/CHALLENGE_2/DEFI_Y/GROUPE_BOURGEOIS_JULIA/LEDS/LED1"
+TOPIC_ECOUTE = "ISIMA/#"
 TOPIC_ECRITURE = "ISIMA/SECRET_ZZZ/CHALLENGE_2/DEFI_Y/GROUPE_BOURGEOIS_JULIA/LEDS/LED2"
 
 # Fonctions d'encodage / décodage
@@ -391,6 +392,10 @@ def on_message(client, userdata, msg):
 def on_publish(client, userdata, mid):
     print("--on_publish callback --mid: " + str(mid) )
 
+if MODE_MQTT == "ECR":
+    CLIENT_ID = CLIENT_ID_ECRITURE
+else:
+    CLIENT_ID = CLIENT_ID_ECOUTE
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=CLIENT_ID)
 client.connected=False
 client.hacked=False
