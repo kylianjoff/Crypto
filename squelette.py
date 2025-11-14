@@ -12,9 +12,15 @@ PORT = 10801
 GROUPE = "GROUPE_BOURGEOIS_JULIA"
 SECRET = "........"
 
-LOG_MQTT = False # Paramètre pour activer ou désactiver l'authentification MQTT
-MQTT_LOGIN = "" # user_x_y
-MQTT_PASSWORD = "" #user_x_y
+MODE_MQTT = "LECT" # "LECT" pour écoute seule, "ECR" pour écriture seule
+
+LOG_MQTT_ECOUTE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écoute
+MQTT_LOGIN_ECOUTE = "" # user_x_y
+MQTT_PASSWORD_ECOUTE = "" #user_x_y
+
+LOG_MQTT_ECRITURE = False # Paramètre pour activer ou désactiver l'authentification MQTT pour l'écriture
+MQTT_LOGIN_ECRITURE = "" # user_x_y
+MQTT_PASSWORD_ECRITURE = "" # user_x_y
 
 # Topics MQTT
 
